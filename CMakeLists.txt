@@ -21,22 +21,33 @@ set(endeavor-compile-options -mmcu=${AVR_MCU} -Os -Wall -Wextra -Wpedantic)
 set(endeavor-link-options -mmcu=${AVR_MCU} -Wl,--gc-sections,--relax)
 
 # ---
-add_executable(simple-avr-library src/main.c)
+add_library(simple-avr-library OBJECT 
+    include/simple_avr/gpio.h 
+    include/simple_avr/delay.h
+    include/simple_avr/typedef.h
+    
+    src/simple_avr/gpio.c
+)
 target_include_directories(simple-avr-library PRIVATE src PUBLIC include PUBLIC vendor/avr-toolchain/avr-win32/avr/include)
 target_compile_features(simple-avr-library PRIVATE c_std_11)
-set_target_properties(simple-avr-library PROPERTIES SUFFIX ".elf")
 
 target_compile_definitions(simple-avr-library PRIVATE ${endeavor-definitions})
 target_compile_options(simple-avr-library PUBLIC ${endeavor-compile-options})
 target_link_options(simple-avr-library PUBLIC ${endeavor-link-options})
 
+# ---
+add_executable(simple-avr-example src/main.c)
+target_compile_features(simple-avr-example PRIVATE c_std_11)
+set_target_properties(simple-avr-example PROPERTIES SUFFIX ".elf")
+target_link_libraries(simple-avr-example simple-avr-library)
+
 add_custom_command(
-    TARGET simple-avr-library
+    TARGET simple-avr-example
     POST_BUILD
-    COMMENT "[simple-avr-library] Generating hex file and writing to AVR device..."
-    COMMAND ${AVR_OBJCOPY} -O ihex -R .eeprom $<TARGET_FILE:simple-avr-library> $<TARGET_FILE_BASE_NAME:simple-avr-library>.hex
-    COMMAND ${AVR_SIZE} $<TARGET_FILE:simple-avr-library>
-    COMMAND ${AVR_DUDE} -c stk500v2 -p ${AVR_MCU} -P ${AVR_PROGRAMMING_PORT} -b ${AVR_PROGRAMMING_BAUD} -U flash:w:$<TARGET_FILE_BASE_NAME:simple-avr-library>.hex:i
+    COMMENT "[simple-avr-example] Generating hex file and writing to AVR device..."
+    COMMAND ${AVR_OBJCOPY} -O ihex -R .eeprom $<TARGET_FILE:simple-avr-example> $<TARGET_FILE_BASE_NAME:simple-avr-example>.hex
+    COMMAND ${AVR_SIZE} $<TARGET_FILE:simple-avr-example>
+    COMMAND ${AVR_DUDE} -c stk500v2 -p ${AVR_MCU} -P ${AVR_PROGRAMMING_PORT} -b ${AVR_PROGRAMMING_BAUD} -U flash:w:$<TARGET_FILE_BASE_NAME:simple-avr-example>.hex:i
     VERBATIM
 )
 

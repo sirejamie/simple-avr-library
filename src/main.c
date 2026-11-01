@@ -1,16 +1,16 @@
-#define F_CPU 10000000UL
+#include "simple_avr/gpio.h"
+#include "simple_avr/delay.h"
 
-#include <avr/io.h>
-#include <util/delay.h>
+#define BUILTIN_LED 13
 
 int main(void) {
-  DDRB = 0xFF;
+  pin_mode(BUILTIN_LED, PINMODE_OUTPUT);
 
   while (1) {
-    PORTB = 0xFF;
-    _delay_ms(250);
-    PORTB = 0x00;
-    _delay_ms(250);
+    write_digital(BUILTIN_LED, HIGH);
+    delay(250);
+    write_digital(BUILTIN_LED, LOW);
+    delay(250);
   }
 
   return 0;
