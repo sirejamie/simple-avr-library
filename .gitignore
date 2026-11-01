@@ -68,4 +68,5 @@ Testing/
 .cache/
 
 # others
-vendor/
+vendor/*
+!vendor/README.md
