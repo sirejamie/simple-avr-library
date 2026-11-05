@@ -1,6 +1,6 @@
 # Simple AVR Library
 
-Simple AVR Library is a small programming library built for AVR-based Microcontroller Units.
+Simple AVR Library is a small programming library built for AVR-based Microcontrollers.
 
 ## Commands
 
